@@ -8,7 +8,6 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"math/big"
-	"net/rpc"
 	"strconv"
 	"strings"
 
@@ -19,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
 //签名
