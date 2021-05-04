@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"crypto/ecdsa"
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
 	"math/big"
+	"net/rpc"
 	"strconv"
 	"strings"
 
@@ -398,4 +400,22 @@ func IntToBytes(i int) []byte {
 
 func Byte32ToBytes(bs [32]byte) []byte {
 	return bs[:]
+}
+
+func GetInfuraEthClientUseSecret(endpoint string, secret string) (*ethclient.Client, error) {
+	return GetEthClientWithHeader(endpoint, "Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(":"+secret)))
+}
+
+func GetInfuraEthClientUseJWT(endpoint string, token string) (*ethclient.Client, error) {
+	return GetEthClientWithHeader(endpoint, "Authorization", "Bearer "+token)
+}
+
+func GetEthClientWithHeader(endpoint string, key string, val string) (*ethclient.Client, error) {
+	rpcClient, err := rpc.Dial(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	rpcClient.SetHeader(key, val)
+
+	return ethclient.NewClient(rpcClient), nil
 }
