@@ -21,6 +21,14 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
+var (
+	//bytes of "\x19Ethereum Signed Message:\n32"
+	SIGN_PREFIX_STANDARD []byte = []byte("\u0019Ethereum Signed Message:\n32")
+
+	//bytes of "\x19\x01"
+	SIGN_PREFIX_HEX1901 []byte = []byte("\u0019\u0001")
+)
+
 //签名
 type Signature struct {
 	R []byte
