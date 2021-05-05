@@ -247,8 +247,7 @@ func SignTx(prv *ecdsa.PrivateKey, tx *types.Transaction, chainID *big.Int) *typ
 
 //发送已签名的tx
 func SendRawTx(client *ethclient.Client, tx *types.Transaction) error {
-	ctx := context.Background()
-	return client.SendTransaction(ctx, tx)
+	return client.SendTransaction(context.Background(), tx)
 }
 
 //获取已签名交易的txhash
