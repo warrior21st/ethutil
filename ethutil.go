@@ -147,7 +147,7 @@ func PubkeyToAddress(pubkey *ecdsa.PublicKey) string {
 }
 
 func HexToAddress(addr string) common.Address {
-	return common.FromHex(addr)
+	return common.HexToAddress(addr)
 }
 
 func AddressToHex(addr common.Address) string {
@@ -235,6 +235,16 @@ func PackFuncArgs(datas *[]AbiParam) *[]byte {
 	return &buf
 }
 
+//生成新交易
+func NewTx(nonce uint64, to string, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *types.Transaction {
+	return types.NewTransaction(nonce, common.HexToAddress(to), amount, gasLimit, gasPrice, data)
+}
+
+//生成部署合约的交易
+func NewContractCreation(nonce uint64, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *types.Transaction {
+	return types.NewContractCreation(nonce, amount, gasLimit, gasPrice, data)
+}
+
 //签名交易
 func SignTx(prv *ecdsa.PrivateKey, tx *types.Transaction, chainID *big.Int) *types.Transaction {
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), prv)
@@ -252,7 +262,7 @@ func SendRawTx(client *ethclient.Client, tx *types.Transaction) error {
 
 //获取已签名交易的txhash
 func GetRawTxHash(tx *types.Transaction) string {
-	return tx.Hash().Hex()
+	return Add0xPrefix(tx.Hash().Hex())
 }
 
 //获取合约abi对象
@@ -263,17 +273,6 @@ func GetContractAbi(abiJson string) *abi.ABI {
 	}
 
 	return &abiObj
-}
-
-//生成新交易（未签名）
-func NewTx(nonce uint64, to string, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *types.Transaction {
-	var toAddr common.Address
-	if strings.Trim(to, " ") == "" {
-		toAddr = nil
-	} else {
-		toAddr = common.HexToAddress(to)
-	}
-	return types.NewTransaction(nonce, toAddr, amount, gasLimit, gasPrice, data)
 }
 
 //获取交易from地址
