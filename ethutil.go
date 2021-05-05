@@ -33,16 +33,6 @@ type AbiParam struct {
 	Data []byte
 }
 
-var zeroBigInt = big.NewInt(0)
-
-var (
-	//bytes of "\x19Ethereum Signed Message:\n32"
-	SIGN_PREFIX_STANDARD []byte = []byte("\u0019Ethereum Signed Message:\n32")
-
-	//bytes of "\x19\x01"
-	SIGN_PREFIX_HEX1901 []byte = []byte("\u0019\u0001")
-)
-
 //获取签名地址
 func Ecrecover(digestHash []byte, signature []byte) string {
 	bs, err := secp256k1.RecoverPubkey(digestHash, signature)
@@ -157,11 +147,11 @@ func PubkeyToAddress(pubkey *ecdsa.PublicKey) string {
 }
 
 func HexToAddress(addr string) common.Address {
-	return common.HexToAddress(addr)
+	return common.FromHex(addr)
 }
 
 func AddressToHex(addr common.Address) string {
-	return hexutil.Encode(addr[len(addr)-20:])
+	return addr.Hex()
 }
 
 func HexToBytes(hexStr string) []byte {
@@ -291,72 +281,6 @@ func GetTxFrom(tx *types.Transaction, chainID *big.Int) string {
 	return AddressToHex(addr)
 }
 
-// func getPackArgBytes(val interface{}, isFunc bool) []byte {
-// 	v := indirect(reflect.ValueOf(val))
-// 	var temp []byte
-// 	kind := v.Kind()
-// 	switch kind {
-// 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
-// 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-// 		reflect.Ptr:
-// 		temp = packNum(v)
-// 	case reflect.String:
-// 		if isFunc {
-// 			temp = packBytesSlice([]byte(v.String()), v.Len())
-// 		} else {
-// 			temp = []byte(v.String())
-// 		}
-// 	case reflect.Array:
-// 		temp = *(*[]byte)((*stringStruct)(unsafe.Pointer(&val)).str)
-// 	case reflect.Slice:
-// 		temp = val.([]uint8)
-// 	default:
-// 		panic("abi: fatal error")
-// 	}
-
-// 	if len(temp) < 32 && kind != reflect.String {
-// 		return common.RightPadBytes(temp, 32)
-// 	} else {
-// 		buf := make([]byte, len(temp))
-// 		copy(buf, temp)
-// 		return buf
-// 	}
-// }
-
-// // indirect recursively dereferences the value until it either gets the value
-// // or finds a big.Int
-// func indirect(v reflect.Value) reflect.Value {
-// 	if v.Kind() == reflect.Ptr && v.Elem().Type() != reflect.TypeOf(big.Int{}) {
-// 		return indirect(v.Elem())
-// 	}
-// 	return v
-// }
-
-// // packBytesSlice packs the given bytes as [L, V] as the canonical representation
-// // bytes slice.
-// func packBytesSlice(bytes []byte, l int) []byte {
-// 	len := packNum(reflect.ValueOf(l))
-// 	return append(len, common.RightPadBytes(bytes, (l+31)/32*32)...)
-// }
-
-// // packNum packs the given number (using the reflect value) and will cast it to appropriate number representation.
-// func packNum(value reflect.Value) []byte {
-// 	switch kind := value.Kind(); kind {
-// 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-// 		return math.U256Bytes(new(big.Int).SetUint64(value.Uint()))
-// 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-// 		return math.U256Bytes(big.NewInt(value.Int()))
-// 	case reflect.Ptr:
-// 		return math.U256Bytes(new(big.Int).Set(value.Interface().(*big.Int)))
-// 	default:
-// 		panic("abi: fatal error")
-// 	}
-// }
-
-func BigIntToBytes(i *big.Int) []byte {
-	return i.Bytes()
-}
-
 func Int64ToBytes(i int64) []byte {
 	s1 := make([]byte, 8)
 	binary.BigEndian.PutUint64(s1, uint64(i))
@@ -373,33 +297,6 @@ func IntToBytes(i int) []byte {
 	s1 := make([]byte, 8)
 	binary.BigEndian.PutUint64(s1, uint64(i))
 	return s1
-}
-
-// //解包tx inputdata,返回map
-// func UnpackTxInputsIntoMap(m map[string]interface{}, funcMethod abi.Method, tx *types.Transaction) {
-// 	err := funcMethod.Inputs.UnpackIntoMap(m, tx.Data()[4:])
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
-
-// //解包tx inputdata
-// func UnpackTxInputs(funcMethod abi.Method, tx *types.Transaction) []interface{} {
-// 	inputs, err := funcMethod.Inputs.Unpack(tx.Data()[4:])
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	return inputs
-// }
-
-// //获取tx inputdata
-// func GetTxInputData(tx *types.Transaction) []byte {
-// 	return tx.Data()[4:]
-// }
-
-func Byte32ToBytes(bs [32]byte) []byte {
-	return bs[:]
 }
 
 func GetInfuraEthClientUseSecret(endpoint string, secret string) (*ethclient.Client, error) {
