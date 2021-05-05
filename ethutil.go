@@ -19,7 +19,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
-	"golang.org/x/tools/go/analysis/passes/nilfunc"
 )
 
 //签名
@@ -270,10 +269,9 @@ func GetContractAbi(abiJson string) *abi.ABI {
 func NewTx(nonce uint64, to string, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *types.Transaction {
 	var toAddr common.Address
 	if strings.Trim(to, " ") == "" {
-		toAddr=nil
-	}
-	else{
-		toAddr=common.HexToAddress(to)
+		toAddr = nil
+	} else {
+		toAddr = common.HexToAddress(to)
 	}
 	return types.NewTransaction(nonce, toAddr, amount, gasLimit, gasPrice, data)
 }
