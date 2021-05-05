@@ -252,7 +252,7 @@ func SendRawTx(client *ethclient.Client, tx *types.Transaction) error {
 
 //获取已签名交易的txhash
 func GetRawTxHash(tx *types.Transaction) string {
-	return hexutil.Encode(tx.Hash().Bytes())
+	return tx.Hash().Hex()
 }
 
 //获取合约abi对象
@@ -283,7 +283,7 @@ func GetTxFrom(tx *types.Transaction, chainID *big.Int) string {
 		panic(err)
 	}
 
-	return AddressToHex(addr)
+	return addr.Hex()
 }
 
 func Int64ToBytes(i int64) []byte {
@@ -320,4 +320,12 @@ func GetEthClientWithHeader(endpoint string, key string, val string) (*ethclient
 	rpcClient.SetHeader(key, val)
 
 	return ethclient.NewClient(rpcClient), nil
+}
+
+func Add0xPrefix(hexStr string) string {
+	if len(hexStr) >= 2 && hexStr[0] == '0' && (hexStr[1] == 'x' || hexStr[1] == 'X') {
+		return strings.ToLower(hexStr)
+	} else {
+		return "0x" + strings.ToLower(hexStr)
+	}
 }
