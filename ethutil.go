@@ -49,8 +49,8 @@ func EcRecover(digestHash []byte, sig []byte) (common.Address, error) {
 	if sig[64] != 27 && sig[64] != 28 {
 		return common.Address{}, errors.New("invalid Ethereum signature (V is not 27 or 28)")
 	}
-	sig[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
-	pubKey, err := crypto.SigToPub(digestHash, sig)
+	//sig[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
+	pubKey, err := crypto.SigToPub(digestHash, append(sig[0:63], sig[64]-27))
 	if err != nil {
 		return common.Address{}, err
 	}
