@@ -202,7 +202,7 @@ func HexToECDSAPrivateKey(privateKey string) *ecdsa.PrivateKey {
 //ecdsa私钥指针转私钥字符串
 func ECDSAPrivateKeyToHex(prv *ecdsa.PrivateKey) string {
 	src := crypto.FromECDSA(prv)
-	b := make([]byte, len(src))
+	b := make([]byte, len(src)*2)
 	hex.Encode(b, src)
 	return string(b)
 }
