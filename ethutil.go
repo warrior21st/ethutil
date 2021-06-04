@@ -201,7 +201,10 @@ func HexToECDSAPrivateKey(privateKey string) *ecdsa.PrivateKey {
 
 //ecdsa私钥指针转私钥字符串
 func ECDSAPrivateKeyToHex(prv *ecdsa.PrivateKey) string {
-	return hexutil.Encode(crypto.FromECDSA(prv))
+	src := crypto.FromECDSA(prv)
+	b := make([]byte, len(src))
+	hex.Encode(b, src)
+	return string(b)
 }
 
 //是否是有效的私钥16进制字符串
