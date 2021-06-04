@@ -336,3 +336,20 @@ func Add0xPrefix(hexStr string) string {
 		return "0x" + strings.ToLower(hexStr)
 	}
 }
+
+//填充到32位长度
+func FillTo32Bytes(data []byte) []byte {
+	if len(data) >= 32 {
+		return data
+	}
+
+	return append(make([]byte, 32-len(data)), data...)
+}
+
+func PaddingLeft(data []byte, targetLen int) []byte {
+	if len(data) >= targetLen {
+		return data
+	}
+
+	return append(make([]byte, targetLen-len(data)), data...)
+}
