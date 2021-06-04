@@ -51,7 +51,7 @@ func EcRecover(digestHash []byte, sig []byte) (common.Address, error) {
 	}
 	//sig[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
 	sig2 := make([]byte, len(sig))
-	copy(sig, sig2)
+	copy(sig2, sig)
 	sig2[64] -= 27
 	pubKey, err := crypto.SigToPub(digestHash, sig2)
 	if err != nil {
