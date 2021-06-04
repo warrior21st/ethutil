@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 	"math/big"
 	"strconv"
 	"strings"
@@ -16,7 +17,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 )
@@ -42,13 +42,22 @@ type AbiParam struct {
 }
 
 //获取签名地址
-func Ecrecover(digestHash []byte, signature []byte) string {
-	bs, err := secp256k1.RecoverPubkey(digestHash, signature)
-	if err != nil {
-		panic(err)
+func EcRecover(digestHash []byte, sig []byte) (common.Address, error) {
+	if len(sig) != 65 {
+		return common.Address{}, errors.New("signature must be 65 bytes long")
 	}
+	if sig[64] != 27 && sig[64] != 28 {
+		return common.Address{}, errors.New("invalid Ethereum signature (V is not 27 or 28)")
+	}
+	sig[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
 
-	return hexutil.Encode(bs)
+	rpk, err := crypto.Ecrecover(digestHash, sig)
+	if err != nil {
+		return common.Address{}, err
+	}
+	pubKey := crypto.ToECDSAPub(rpk)
+	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
+	return recoveredAddr, nil
 }
 
 //签名消息 The produced signature is in the [R || S || V] format where V is 0 or 1.
@@ -66,8 +75,8 @@ func SignMessage(digestHash []byte, prv *ecdsa.PrivateKey) *Signature {
 }
 
 //验证签名
-func VerifySignature(address string, digestHash, signature []byte) bool {
-	return secp256k1.VerifySignature(common.FromHex(address), digestHash, signature)
+func VerifySignature(address common.Address, digestHash []byte, signature []byte) bool {
+	return strings.ToLower(EcRecover(digestHash, signature).Hex()) == strings.ToLower(address.Hex())
 }
 
 //16进制字符串转换为签名
