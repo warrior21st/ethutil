@@ -55,7 +55,7 @@ func EcRecover(digestHash []byte, sig []byte) (common.Address, error) {
 	if err != nil {
 		return common.Address{}, err
 	}
-	pubKey := crypto.ToECDSAPub(rpk)
+	pubKey := crypto.SigToPub(rpk)
 	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
 	return recoveredAddr, nil
 }
