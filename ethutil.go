@@ -74,7 +74,11 @@ func SignMessage(digestHash []byte, prv *ecdsa.PrivateKey) *Signature {
 
 //验证签名
 func VerifySignature(address common.Address, digestHash []byte, signature []byte) bool {
-	return strings.ToLower(EcRecover(digestHash, signature).Hex()) == strings.ToLower(address.Hex())
+	addr, err := EcRecover(digestHash, signature)
+	if err != nil {
+		panic(err)
+	}
+	return strings.ToLower(addr.Hex()) == strings.ToLower(address.Hex())
 }
 
 //16进制字符串转换为签名
