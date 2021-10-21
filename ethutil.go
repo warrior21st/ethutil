@@ -389,7 +389,7 @@ func EncryptPrivLight(priv string, pwd string) string {
 		panic(err)
 	}
 
-	return json
+	return string(json)
 }
 
 //encrypt private key to json keystore,use standard scryptN,scryptP
@@ -400,7 +400,7 @@ func EncryptPrivStandard(priv string, pwd string) string {
 		panic(err)
 	}
 
-	return json
+	return string(json)
 }
 
 //decrypt json keystore to private key plantext hex string
