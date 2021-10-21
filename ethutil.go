@@ -411,7 +411,10 @@ func DecryptKeyStore(keyStoreJson []byte, pwd string) string {
 		panic(err)
 	}
 
-	return hexutil.Encode(k.PrivateKey.D.Bytes())
+	buffer := k.PrivateKey.D.Bytes()
+	b := make([]byte, len(buffer)*2)
+	hex.Encode(b, buffer)
+	return string(b)
 }
 
 func newKeyFromECDSA(privateKeyECDSA *ecdsa.PrivateKey) *keystore.Key {
