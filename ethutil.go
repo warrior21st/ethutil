@@ -8,17 +8,20 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math/big"
 	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/google/uuid"
 )
 
 var (
@@ -368,5 +371,46 @@ func PaddingLeft(data []byte, targetLen int) []byte {
 		return data
 	}
 
-	return append(make([]byte, targetLen-len(data)), data...)
+}
+
+func PaddingRight0(data []byte, targetLen int) []byte {
+	if len(data) >= targetLen {
+		return data
+	}
+
+	return append(data, make([]byte, targetLen-len(data))...)
+}
+
+//encrypt private key to json keystore
+func EncryptPrivateKey(priv string, pwd string) string {
+	key := newKeyFromECDSA(HexToECDSAPrivateKey(priv))
+	json, err := keystore.EncryptKey(key, pwd)
+	if err != nil {
+		panic(err)
+	}
+
+	return json
+}
+
+//decrypt json keystore to private key plantext hex string
+func DecryptKeyStore(keyStoreJson []byte, pwd string) string {
+	k, err := keystore.DecryptKey(keyStoreJson, pwd)
+	if err != nil {
+		panic(err)
+	}
+
+	return hexutil.Encode(k.PrivateKey.D.Bytes())
+}
+
+func newKeyFromECDSA(privateKeyECDSA *ecdsa.PrivateKey) *keystore.Key {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		panic(fmt.Sprintf("Could not create random uuid: %v", err))
+	}
+	key := &keystore.Key{
+		Id:         id,
+		Address:    crypto.PubkeyToAddress(privateKeyECDSA.PublicKey),
+		PrivateKey: privateKeyECDSA,
+	}
+	return key
 }
