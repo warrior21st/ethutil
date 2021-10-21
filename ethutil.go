@@ -371,6 +371,7 @@ func PaddingLeft(data []byte, targetLen int) []byte {
 		return data
 	}
 
+	return append(make([]byte, targetLen-len(data)), data...)
 }
 
 func PaddingRight0(data []byte, targetLen int) []byte {
