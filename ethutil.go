@@ -383,25 +383,25 @@ func PaddingRight0(data []byte, targetLen int) []byte {
 }
 
 //encrypt private key to json keystore,use light scryptN,scryptP
-func EncryptPrivLight(priv string, pwd string) string {
+func EncryptPrivLight(priv string, pwd string) []byte {
 	key := newKeyFromECDSA(HexToECDSAPrivateKey(priv))
 	json, err := keystore.EncryptKey(key, pwd, keystore.LightScryptN, keystore.LightScryptP)
 	if err != nil {
 		panic(err)
 	}
 
-	return string(json)
+	return json
 }
 
 //encrypt private key to json keystore,use standard scryptN,scryptP
-func EncryptPrivStandard(priv string, pwd string) string {
+func EncryptPrivStandard(priv string, pwd string) []byte {
 	key := newKeyFromECDSA(HexToECDSAPrivateKey(priv))
 	json, err := keystore.EncryptKey(key, pwd, keystore.StandardScryptN, keystore.StandardScryptP)
 	if err != nil {
 		panic(err)
 	}
 
-	return string(json)
+	return json
 }
 
 //decrypt json keystore to private key plantext hex string
