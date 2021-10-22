@@ -429,3 +429,26 @@ func newKeyFromECDSA(privateKeyECDSA *ecdsa.PrivateKey) *keystore.Key {
 	}
 	return key
 }
+
+func Bytes2HexWithout0x(buffer []byte) string {
+	return hex.EncodeToString(buffer)
+}
+
+func Bytes2HexWith0x(buffer []byte) string {
+	return "0x" + hex.EncodeToString(buffer)
+}
+
+func Hex2Bytes(s string) []byte {
+	if has0xPrefix(s) {
+		s = s[2:]
+	}
+	if len(s)%2 == 1 {
+		s = "0" + s
+	}
+	return Hex2Bytes(s)
+}
+
+// has0xPrefix validates str begins with '0x' or '0X'.
+func has0xPrefix(str string) bool {
+	return len(str) >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')
+}
