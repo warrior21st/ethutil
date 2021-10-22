@@ -405,8 +405,8 @@ func EncryptPrivStandard(priv string, pwd string) string {
 }
 
 //decrypt json keystore to private key plantext hex string
-func DecryptKeyStore(keyStoreJson []byte, pwd string) string {
-	k, err := keystore.DecryptKey(keyStoreJson, pwd)
+func DecryptKeyStore(keystoreJson []byte, pwd string) string {
+	k, err := keystore.DecryptKey(keystoreJson, pwd)
 	if err != nil {
 		panic(err)
 	}
