@@ -359,27 +359,15 @@ func Add0xPrefix(hexStr string) string {
 
 //填充到32位长度
 func FillTo32Bytes(data []byte) []byte {
-	if len(data) >= 32 {
-		return data
-	}
-
-	return append(make([]byte, 32-len(data)), data...)
+	return common.LeftPadBytes(data, 32)
 }
 
-func PaddingLeft(data []byte, targetLen int) []byte {
-	if len(data) >= targetLen {
-		return data
-	}
-
-	return append(make([]byte, targetLen-len(data)), data...)
+func PaddingLeft0(data []byte, targetLen int) []byte {
+	return common.LeftPadBytes(data, targetLen)
 }
 
 func PaddingRight0(data []byte, targetLen int) []byte {
-	if len(data) >= targetLen {
-		return data
-	}
-
-	return append(data, make([]byte, targetLen-len(data))...)
+	return common.RightPadBytes(data, targetLen)
 }
 
 //encrypt private key to json keystore,use light scryptN,scryptP
