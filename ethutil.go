@@ -405,16 +405,13 @@ func EncryptPrivStandard(priv string, pwd string) []byte {
 }
 
 //decrypt json keystore to private key plantext hex string
-func DecryptKeystore(keystoreJson []byte, pwd string) string {
+func DecryptKeystore(keystoreJson []byte, pwd string) *ecdsa.PrivateKey {
 	k, err := keystore.DecryptKey(keystoreJson, pwd)
 	if err != nil {
 		panic(err)
 	}
 
-	buffer := k.PrivateKey.D.Bytes()
-	b := make([]byte, len(buffer)*2)
-	hex.Encode(b, buffer)
-	return string(b)
+	return k.PrivateKey
 }
 
 func newKeyFromECDSA(privateKeyECDSA *ecdsa.PrivateKey) *keystore.Key {
